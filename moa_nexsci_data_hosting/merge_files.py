@@ -35,10 +35,13 @@ def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, dest
     if unordered_merged_data_frame[ColumnName.AIRMASS_1].isna().all():
         unordered_merged_data_frame[ColumnName.COR_FLUX] = np.nan
     merged_data_frame = unordered_merged_data_frame[merged_column_names]
+    save_data_frame_to_traditional_format_text_file(merged_data_frame, destination_merged_path)
+
+
+def save_data_frame_to_traditional_format_text_file(merged_data_frame, destination_merged_path):
     table_string = tabulate(merged_data_frame, headers=merged_column_names, tablefmt='plain', missingval='na',
                             floatfmt=tuple(merged_column_formats.values()), showindex=False, numalign='right')
     table_string = table_string.replace('nan', ' na')
-
     with gzip.open(destination_merged_path, 'wt') as merged_file:
         merged_file.write(table_string)
 
