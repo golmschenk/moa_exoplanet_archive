@@ -10,7 +10,7 @@ import pandas as pd
 import pysftp as pysftp
 from tabulate import tabulate
 
-from moa_nexsci_data_hosting.column_name import phot_all_column_names, phot_cor_column_names, ColumnName, \
+from moa_exoplanet_archive.column_name import phot_all_column_names, phot_cor_column_names, ColumnName, \
     merged_column_names, merged_column_formats
 
 
