@@ -16,9 +16,9 @@ from moa_exoplanet_archive.column_name import phot_all_column_names, phot_cor_co
 
 def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, destination_merged_path: Path):
     containing_directory_path = dot_phot_dot_all_path.parent
-    dot_phot_name = dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.gz')
+    dot_phot_name = dot_phot_dot_all_path.name.replace('.phot.all', '.phot')
     dot_phot_path = containing_directory_path.joinpath(dot_phot_name)
-    dot_phot_dot_cor_name = dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.cor.gz')
+    dot_phot_dot_cor_name = dot_phot_dot_all_path.name.replace('.phot.all', '.phot.cor')
     dot_phot_dot_cor_path = containing_directory_path.joinpath(dot_phot_dot_cor_name)
     dot_phot_dot_all_data_frame = pd.read_csv(dot_phot_dot_all_path, comment='#', names=phot_all_column_names,
                                               delim_whitespace=True, skipinitialspace=True)
@@ -58,7 +58,7 @@ def save_data_frame_to_traditional_format_text_file(merged_data_frame, destinati
 def merge_three_version_directory(phot_all_path, three_version_directory, merged_version_directory):
     merged_sub_path = phot_all_path.relative_to(three_version_directory)
     merged_path = merged_version_directory.joinpath(merged_sub_path)
-    merged_path = merged_path.parent.joinpath(merged_path.name.replace('.phot.all.gz', '.txt.gz'))
+    merged_path = merged_path.parent.joinpath(merged_path.name.replace('.phot.all', '.txt'))
     merged_path.parent.mkdir(parents=True, exist_ok=True)
     merge_split_version_files_into_single_file(phot_all_path, merged_path)
 
@@ -67,7 +67,7 @@ def convert_directory_to_merged_version(three_version_directory: Path, merged_ve
     merge_three_version_with_roots = partial(merge_three_version_directory,
                                              three_version_directory=three_version_directory,
                                              merged_version_directory=merged_version_directory)
-    paths = three_version_directory.glob('**/*.phot.all.gz')
+    paths = three_version_directory.glob('**/*.phot.all')
     with multiprocessing.get_context('spawn').Pool(processes=20, maxtasksperchild=200) as pool:
         for _ in pool.imap_unordered(merge_three_version_with_roots, paths):
             pass
@@ -82,16 +82,16 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
         count = 0
 
         def remote_to_local_merge_split_version_files_into_single_file(remote_dot_phot_dot_all_path_str: str):
-            if remote_dot_phot_dot_all_path_str.endswith('.phot.all.gz'):
+            if remote_dot_phot_dot_all_path_str.endswith('.phot.all'):
                 remote_dot_phot_dot_all_path = Path(remote_dot_phot_dot_all_path_str)
                 nonlocal count
                 print(f'{count}: {remote_dot_phot_dot_all_path}')
                 count += 1
                 dot_phot_dot_all_name = remote_dot_phot_dot_all_path.name
                 remote_containing_directory_path = remote_dot_phot_dot_all_path.parent
-                dot_phot_name = remote_dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.gz')
+                dot_phot_name = remote_dot_phot_dot_all_path.name.replace('.phot.all', '.phot')
                 remote_dot_phot_path = remote_containing_directory_path.joinpath(dot_phot_name)
-                dot_phot_dot_cor_name = remote_dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.cor.gz')
+                dot_phot_dot_cor_name = remote_dot_phot_dot_all_path.name.replace('.phot.all', '.phot.cor')
                 remote_dot_phot_dot_cor_path = remote_containing_directory_path.joinpath(dot_phot_dot_cor_name)
                 relative_parent_path = remote_dot_phot_dot_all_path.parent.relative_to(remote_three_version_root_directory)
                 local_parent_path = local_merged_root_directory.joinpath(relative_parent_path)
@@ -103,7 +103,7 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
                 sftp.get(str(remote_dot_phot_path), str(local_dot_phot_path))
                 sftp.get(str(remote_dot_phot_dot_cor_path), str(local_dot_phot_dot_cor_path))
                 merged_path = local_dot_phot_dot_all_path.parent.joinpath(
-                    local_dot_phot_dot_all_path.name.replace('.phot.all.gz', '.txt.gz'))
+                    local_dot_phot_dot_all_path.name.replace('.phot.all', '.txt'))
                 merge_split_version_files_into_single_file(local_dot_phot_dot_all_path, merged_path)
                 local_dot_phot_dot_all_path.unlink()
                 local_dot_phot_path.unlink()
