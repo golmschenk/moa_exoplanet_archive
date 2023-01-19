@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moa_exoplanet_archive"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Greg Olmschenk <greg@olmschenk.com>"]
 readme = "README.md"
