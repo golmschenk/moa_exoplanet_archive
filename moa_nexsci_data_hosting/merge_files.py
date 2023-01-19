@@ -1,10 +1,13 @@
+import getpass
 import gzip
 import multiprocessing
 from functools import partial
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 import pandas as pd
+import pysftp as pysftp
 from tabulate import tabulate
 
 from moa_nexsci_data_hosting.column_name import phot_all_column_names, phot_cor_column_names, ColumnName, \
@@ -52,7 +55,7 @@ def save_data_frame_to_traditional_format_text_file(merged_data_frame, destinati
         merged_file.write(table_string)
 
 
-def merge_three_version(phot_all_path, three_version_directory, merged_version_directory):
+def merge_three_version_directory(phot_all_path, three_version_directory, merged_version_directory):
     merged_sub_path = phot_all_path.relative_to(three_version_directory)
     merged_path = merged_version_directory.joinpath(merged_sub_path)
     merged_path = merged_path.parent.joinpath(merged_path.name.replace('.phot.all.gz', '.txt.gz'))
@@ -61,7 +64,7 @@ def merge_three_version(phot_all_path, three_version_directory, merged_version_d
 
 
 def convert_directory_to_merged_version(three_version_directory: Path, merged_version_directory: Path):
-    merge_three_version_with_roots = partial(merge_three_version,
+    merge_three_version_with_roots = partial(merge_three_version_directory,
                                              three_version_directory=three_version_directory,
                                              merged_version_directory=merged_version_directory)
     paths = three_version_directory.glob('**/*.phot.all.gz')
@@ -70,7 +73,55 @@ def convert_directory_to_merged_version(three_version_directory: Path, merged_ve
             pass
 
 
+def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remote_password: Optional[str] = None,
+                               remote_private_key: Optional[str] = None):
+    with pysftp.Connection(remote_hostname, username=remote_username, private_key=remote_private_key,
+                           password=remote_password) as sftp:
+        remote_three_version_root_directory = Path('/root/moa/MOA2dia')
+        local_merged_root_directory = Path('check0')
+        count = 0
+
+        def remote_to_local_merge_split_version_files_into_single_file(remote_dot_phot_dot_all_path_str: str):
+            if remote_dot_phot_dot_all_path_str.endswith('.phot.all.gz'):
+                remote_dot_phot_dot_all_path = Path(remote_dot_phot_dot_all_path_str)
+                nonlocal count
+                print(f'{count}: {remote_dot_phot_dot_all_path}')
+                count += 1
+                dot_phot_dot_all_name = remote_dot_phot_dot_all_path.name
+                remote_containing_directory_path = remote_dot_phot_dot_all_path.parent
+                dot_phot_name = remote_dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.gz')
+                remote_dot_phot_path = remote_containing_directory_path.joinpath(dot_phot_name)
+                dot_phot_dot_cor_name = remote_dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.cor.gz')
+                remote_dot_phot_dot_cor_path = remote_containing_directory_path.joinpath(dot_phot_dot_cor_name)
+                relative_parent_path = remote_dot_phot_dot_all_path.parent.relative_to(remote_three_version_root_directory)
+                local_parent_path = local_merged_root_directory.joinpath(relative_parent_path)
+                local_parent_path.mkdir(exist_ok=True, parents=True)
+                local_dot_phot_dot_all_path = local_parent_path.joinpath(dot_phot_dot_all_name)
+                local_dot_phot_path = local_parent_path.joinpath(dot_phot_name)
+                local_dot_phot_dot_cor_path = local_parent_path.joinpath(dot_phot_dot_cor_name)
+                sftp.get(str(remote_dot_phot_dot_all_path), str(local_dot_phot_dot_all_path))
+                sftp.get(str(remote_dot_phot_path), str(local_dot_phot_path))
+                sftp.get(str(remote_dot_phot_dot_cor_path), str(local_dot_phot_dot_cor_path))
+                merged_path = local_dot_phot_dot_all_path.parent.joinpath(
+                    local_dot_phot_dot_all_path.name.replace('.phot.all.gz', '.txt.gz'))
+                merge_split_version_files_into_single_file(local_dot_phot_dot_all_path, merged_path)
+                local_dot_phot_dot_all_path.unlink()
+                local_dot_phot_path.unlink()
+                local_dot_phot_dot_cor_path.unlink()
+
+        def pass_function(_):
+            pass
+
+        sftp.walktree(remotepath=str(remote_three_version_root_directory),
+                      fcallback=remote_to_local_merge_split_version_files_into_single_file,
+                      dcallback=pass_function, ucallback=pass_function)
+
+
 if __name__ == '__main__':
-    three_version_directory_ = Path('MOA2dia')
-    merged_version_directory_ = Path('merged_MOA2dia_cor_flux_na')
-    convert_directory_to_merged_version(three_version_directory_, merged_version_directory_)
+    remote_hostname_ = input('Remote hostname: ')
+    remote_username_ = input('User hostname: ')
+    remote_password_ = getpass.getpass(prompt='Remote password: ')
+    copy_and_merge_from_remote(remote_hostname_, remote_username_, remote_password=remote_password_)
+    # three_version_directory_ = Path('MOA2dia')
+    # merged_version_directory_ = Path('merged_MOA2dia_cor_flux_na')
+    # convert_directory_to_merged_version(three_version_directory_, merged_version_directory_)
