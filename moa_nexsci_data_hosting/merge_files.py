@@ -13,27 +13,33 @@ from moa_nexsci_data_hosting.column_name import phot_all_column_names, phot_cor_
 
 def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, destination_merged_path: Path):
     containing_directory_path = dot_phot_dot_all_path.parent
-    assert dot_phot_dot_all_path.name.endswith('.phot.all.gz')
-    assert dot_phot_dot_all_path.exists()
     dot_phot_name = dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.gz')
     dot_phot_path = containing_directory_path.joinpath(dot_phot_name)
-    assert dot_phot_path.name.endswith('.phot.gz')
-    assert dot_phot_path.exists()
     dot_phot_dot_cor_name = dot_phot_dot_all_path.name.replace('.phot.all.gz', '.phot.cor.gz')
     dot_phot_dot_cor_path = containing_directory_path.joinpath(dot_phot_dot_cor_name)
-    assert dot_phot_dot_cor_path.name.endswith('.phot.cor.gz')
-    assert dot_phot_dot_cor_path.exists()
     dot_phot_dot_all_data_frame = pd.read_csv(dot_phot_dot_all_path, comment='#', names=phot_all_column_names,
                                               delim_whitespace=True, skipinitialspace=True)
-    dot_phot_dot_cor_data_frame = pd.read_csv(dot_phot_dot_cor_path, comment='#', names=phot_cor_column_names,
-                                              delim_whitespace=True, skipinitialspace=True)
-    columns_to_merge_in = dot_phot_dot_cor_data_frame.columns.difference(dot_phot_dot_all_data_frame.columns).tolist()
-    columns_to_merge_in.append(ColumnName.HJD)
-    unordered_merged_data_frame = pd.merge(dot_phot_dot_all_data_frame,
-                                           dot_phot_dot_cor_data_frame[columns_to_merge_in], on=ColumnName.HJD,
-                                           how='outer')
-    if unordered_merged_data_frame[ColumnName.AIRMASS_1].isna().all():
-        unordered_merged_data_frame[ColumnName.COR_FLUX] = np.nan
+    dot_phot_data_frame = pd.read_csv(dot_phot_path, comment='#', names=phot_all_column_names,
+                                      delim_whitespace=True, skipinitialspace=True)
+    without_cor_data_frame = pd.merge(dot_phot_dot_all_data_frame,
+                                      dot_phot_data_frame[[ColumnName.HJD,]],
+                                      on=ColumnName.HJD, how='outer', indicator=True)
+    without_cor_data_frame[ColumnName.INCLUDED] = without_cor_data_frame['_merge'] == 'both'
+    without_cor_data_frame.drop(columns='_merge', inplace=True)
+    missing_columns = list(set(phot_cor_column_names) - set(phot_all_column_names))
+    if dot_phot_dot_cor_path.exists():
+        dot_phot_dot_cor_data_frame = pd.read_csv(dot_phot_dot_cor_path, comment='#', names=phot_cor_column_names,
+                                                  delim_whitespace=True, skipinitialspace=True)
+        columns_to_merge_in = missing_columns + [ColumnName.HJD]
+        unordered_merged_data_frame = pd.merge(without_cor_data_frame,
+                                               dot_phot_dot_cor_data_frame[columns_to_merge_in], on=ColumnName.HJD,
+                                               how='outer')
+        if unordered_merged_data_frame[ColumnName.AIRMASS_1].isna().all():
+            unordered_merged_data_frame[ColumnName.COR_FLUX] = np.nan
+    else:
+        for missing_column in missing_columns:
+            without_cor_data_frame[missing_column] = np.nan
+        unordered_merged_data_frame = without_cor_data_frame
     merged_data_frame = unordered_merged_data_frame[merged_column_names]
     save_data_frame_to_traditional_format_text_file(merged_data_frame, destination_merged_path)
 
