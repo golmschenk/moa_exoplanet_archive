@@ -88,15 +88,17 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
                                remote_private_key: Optional[str] = None):
     with pysftp.Connection(remote_hostname, username=remote_username, private_key=remote_private_key,
                            password=remote_password) as sftp:
-        remote_three_version_root_directory = Path('/root/moa/MOA2dia')
-        local_merged_root_directory = Path('check0')
+        remote_three_version_root_directory = Path('/moao38_3/sumi/MOA2dia')
+        local_merged_root_directory = Path('/local/data/emu/share/moa_exoplanet_archive_data')
         count = 0
 
         def remote_to_local_merge_split_version_files_into_single_file(remote_dot_phot_dot_all_path_str: str):
+            nonlocal count
+            if count >= 1000:
+                exit()
             if remote_dot_phot_dot_all_path_str.endswith('.phot.all'):
                 remote_dot_phot_dot_all_path = Path(remote_dot_phot_dot_all_path_str)
-                nonlocal count
-                print(f'{count}: {remote_dot_phot_dot_all_path}')
+                print(f'{count}: {remote_dot_phot_dot_all_path.name.replace(".phot.all", "")}')
                 count += 1
                 dot_phot_dot_all_name = remote_dot_phot_dot_all_path.name
                 remote_containing_directory_path = remote_dot_phot_dot_all_path.parent
