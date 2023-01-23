@@ -88,7 +88,7 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
                                remote_private_key: Optional[str] = None):
     with pysftp.Connection(remote_hostname, username=remote_username, private_key=remote_private_key,
                            password=remote_password) as sftp:
-        remote_three_version_root_directory = Path('/moao38_3/sumi/MOA2dia')
+        remote_three_version_root_directory = Path('/moao38_3/sumi/MOA2dia/lcurve')
         local_merged_root_directory = Path('/local/data/emu/share/moa_exoplanet_archive_data')
         count = 0
 
