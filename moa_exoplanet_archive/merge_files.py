@@ -94,6 +94,7 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
 
         def remote_to_local_merge_split_version_files_into_single_file(remote_dot_phot_dot_all_path_str: str):
             nonlocal count
+            print(f'Scanning for .phot.all: {remote_dot_phot_dot_all_path_str}')
             if count >= 1000:
                 exit()
             if remote_dot_phot_dot_all_path_str.endswith('.phot.all'):
