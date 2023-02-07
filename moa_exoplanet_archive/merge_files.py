@@ -1,4 +1,4 @@
-import getpass
+from astropy import units
 import gzip
 import io
 import multiprocessing
@@ -59,7 +59,17 @@ def save_data_frame_to_traditional_format_text_file(data_frame, output_path):
 
 
 def save_data_frame_to_compressed_ipac_file(data_frame: pd.DataFrame, output_path: Path):
-    data_table: Table = Table.from_pandas(data_frame)
+    dtypes = ['float64', 'float64', 'float64', 'float64', 'int32', 'float64', 'float32', 'float32', 'float32', 'int32',
+              'float32', 'long', 'float32', 'float32', 'int32', 'float32', 'float32', 'bool']
+    units_ = [units.d, units.dimensionless_unscaled, units.dimensionless_unscaled, units.dimensionless_unscaled,
+              units.dimensionless_unscaled, units.d, units.dimensionless_unscaled, units.dimensionless_unscaled,
+              units.dimensionless_unscaled, units.dimensionless_unscaled, units.dimensionless_unscaled, units.s,
+              units.dimensionless_unscaled, units.dimensionless_unscaled, units.dimensionless_unscaled,
+              units.dimensionless_unscaled, units.dimensionless_unscaled, units.dimensionless_unscaled]
+    data = {}
+    for column_name, column in data_frame.items():
+        data[column_name] = column.values
+    data_table = Table(data=data, dtype=dtypes, units=units_)
     string_io = io.StringIO()
     astropy.io.ascii.write(data_table, output=string_io, format='ipac')
     with gzip.open(output_path, 'wt') as merged_file:
@@ -74,14 +84,19 @@ def merge_three_version_directory(phot_all_path, three_version_directory, merged
     merge_split_version_files_into_single_file(phot_all_path, merged_path)
 
 
-def convert_directory_to_merged_version(three_version_directory: Path, merged_version_directory: Path):
+def convert_directory_to_merged_version(three_version_directory: Path, merged_version_directory: Path,
+                                        use_multiprocessing: bool = True):
     merge_three_version_with_roots = partial(merge_three_version_directory,
                                              three_version_directory=three_version_directory,
                                              merged_version_directory=merged_version_directory)
     paths = three_version_directory.glob('**/*.phot.all')
-    with multiprocessing.get_context('spawn').Pool(processes=20, maxtasksperchild=200) as pool:
-        for _ in pool.imap_unordered(merge_three_version_with_roots, paths):
-            pass
+    if use_multiprocessing:
+        with multiprocessing.get_context('spawn').Pool(processes=20, maxtasksperchild=200) as pool:
+            for _ in pool.imap_unordered(merge_three_version_with_roots, paths):
+                pass
+    else:
+        for path in paths:
+            merge_three_version_with_roots(path)
 
 
 def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remote_password: Optional[str] = None,
@@ -133,12 +148,4 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
 
 
 if __name__ == '__main__':
-    remote_hostname_ = input('Remote hostname: ')
-    remote_username_ = input('User hostname: ')
-    remote_password_ = getpass.getpass(prompt='Remote password: ')
-    remote_private_key_ = None
-    if remote_password_ == '':
-        remote_password_ = None
-        remote_private_key_ = input('Remote private key path: ')
-    copy_and_merge_from_remote(remote_hostname_, remote_username_, remote_password=remote_password_,
-                               remote_private_key=remote_private_key_)
+    convert_directory_to_merged_version(Path('light_curve_sample'), Path('light_curve_sample_ipac_format'), use_multiprocessing=False)
