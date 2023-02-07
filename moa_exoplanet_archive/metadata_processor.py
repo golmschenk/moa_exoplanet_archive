@@ -324,7 +324,7 @@ class MetadataProcessor:
                 alert_y__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_Y0__PIXELS],
             )
             alert_metadata_list.append(alert_metadata0)
-        if pd.notna(light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID0]):
+        if pd.notna(light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID1]):
             alert_metadata1 = AlertMetadata(
                 separation_to_alert_position__pixels=light_curve_row[
                     TakahiroSumiCandlistAlertIdFileColumnName.SEPARATION_TO_ALERT_POSITION1__PIXELS],
