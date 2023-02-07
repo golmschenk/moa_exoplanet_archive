@@ -13,14 +13,10 @@ from backports.strenum import StrEnum
 
 @dataclass
 class AlertMetadata:
-    separation_to_alert_position0__pixels: float
-    alert_id0: str
-    alert_x0__pixels: float
-    alert_y0__pixels: float
-    separation_to_alert_position1__pixels: float
-    alert_id1: str
-    alert_x1__pixels: float
-    alert_y1__pixels: float
+    separation_to_alert_position__pixels: float
+    alert_id: str
+    alert_x__pixels: float
+    alert_y__pixels: float
 
 
 @dataclass
@@ -83,7 +79,7 @@ class TargetMetadata:
     ra_j2000: Angle
     dec_j2000: Angle
     candidate_metadata: Optional[CandidateMetadata] = None
-    alert_metadata: Optional[AlertMetadata] = None
+    alert_metadata_list: Optional[List[AlertMetadata]] = None
 
 
 class TakahiroSumiCandlistRaDecFileColumnName(StrEnum):
@@ -231,10 +227,11 @@ class MetadataProcessor:
                                                            y__pixels=y__pixels)
             tag = light_curve_row[TakahiroSumiCandlistFileColumnName.TAG]
             candidate_metadata = self.get_candidate_metadata_for_light_curve(light_curve_path)
-            alert_metadata = self.get_alert_metadata_for_light_curve(light_curve_path)
+            alert_metadata_list = self.get_alert_metadata_list_for_light_curve(light_curve_path)
             target_metadata = TargetMetadata(field=field, chip=chip, subframe=subframe, id=id_, tag=tag,
                                              x__pixels=x__pixels, y__pixels=y__pixels, ra_j2000=ra, dec_j2000=dec,
-                                             candidate_metadata=candidate_metadata, alert_metadata=alert_metadata)
+                                             candidate_metadata=candidate_metadata,
+                                             alert_metadata_list=alert_metadata_list)
             metadata_list.append(target_metadata)
         pass
 
@@ -307,7 +304,7 @@ class MetadataProcessor:
         )
         return candidate_metadata
 
-    def get_alert_metadata_for_light_curve(self, light_curve_path: Path) -> Optional[AlertMetadata]:
+    def get_alert_metadata_list_for_light_curve(self, light_curve_path: Path) -> Optional[List[AlertMetadata]]:
         field, chip, subframe, id_ = self.extract_field_chip_subframe_and_id_from_light_curve_path(light_curve_path)
         try:
             light_curve_row = self.candlist_alert_id_data_frame[
@@ -317,19 +314,28 @@ class MetadataProcessor:
                 (self.candlist_alert_id_data_frame[TakahiroSumiCandlistAlertIdFileColumnName.ID] == id_)].iloc[0]
         except IndexError:
             return None
-        alert_metadata = AlertMetadata(
-            separation_to_alert_position0__pixels=light_curve_row[
-                TakahiroSumiCandlistAlertIdFileColumnName.SEPARATION_TO_ALERT_POSITION0__PIXELS],
-            alert_id0=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID0],
-            alert_x0__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_X0__PIXELS],
-            alert_y0__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_Y0__PIXELS],
-            separation_to_alert_position1__pixels=light_curve_row[
-                TakahiroSumiCandlistAlertIdFileColumnName.SEPARATION_TO_ALERT_POSITION1__PIXELS],
-            alert_id1=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID1],
-            alert_x1__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_X1__PIXELS],
-            alert_y1__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_Y1__PIXELS],
-        )
-        return alert_metadata
+        alert_metadata_list: List[AlertMetadata] = []
+        if pd.notna(light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID0]):
+            alert_metadata0 = AlertMetadata(
+                separation_to_alert_position__pixels=light_curve_row[
+                    TakahiroSumiCandlistAlertIdFileColumnName.SEPARATION_TO_ALERT_POSITION0__PIXELS],
+                alert_id=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID0],
+                alert_x__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_X0__PIXELS],
+                alert_y__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_Y0__PIXELS],
+            )
+            alert_metadata_list.append(alert_metadata0)
+        if pd.notna(light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID0]):
+            alert_metadata1 = AlertMetadata(
+                separation_to_alert_position__pixels=light_curve_row[
+                    TakahiroSumiCandlistAlertIdFileColumnName.SEPARATION_TO_ALERT_POSITION1__PIXELS],
+                alert_id=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_ID1],
+                alert_x__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_X1__PIXELS],
+                alert_y__pixels=light_curve_row[TakahiroSumiCandlistAlertIdFileColumnName.ALERT_Y1__PIXELS],
+            )
+            alert_metadata_list.append(alert_metadata1)
+        if len(alert_metadata_list) == 0:
+            return None
+        return alert_metadata_list
 
 
 if __name__ == '__main__':
