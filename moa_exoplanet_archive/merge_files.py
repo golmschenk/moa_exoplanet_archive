@@ -13,8 +13,8 @@ import pysftp as pysftp
 from astropy.table import Table
 from tabulate import tabulate
 
-from moa_exoplanet_archive.column_name import phot_all_column_names, phot_cor_column_names, ColumnName, \
-    merged_column_names, merged_column_formats
+from moa_exoplanet_archive.light_curve_column_name import phot_all_column_names, phot_cor_column_names, \
+    LightCurveColumnName, merged_column_names, merged_column_formats
 
 
 def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, destination_merged_path: Path):
@@ -28,20 +28,21 @@ def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, dest
     dot_phot_data_frame = pd.read_csv(dot_phot_path, comment='#', names=phot_all_column_names,
                                       delim_whitespace=True, skipinitialspace=True)
     without_cor_data_frame = pd.merge(dot_phot_dot_all_data_frame,
-                                      dot_phot_data_frame[[ColumnName.HJD,]],
-                                      on=ColumnName.HJD, how='outer', indicator=True)
-    without_cor_data_frame[ColumnName.INCLUDED] = without_cor_data_frame['_merge'] == 'both'
+                                      dot_phot_data_frame[[LightCurveColumnName.HJD, ]],
+                                      on=LightCurveColumnName.HJD, how='outer', indicator=True)
+    without_cor_data_frame[LightCurveColumnName.INCLUDED] = without_cor_data_frame['_merge'] == 'both'
     without_cor_data_frame.drop(columns='_merge', inplace=True)
     missing_columns = list(set(phot_cor_column_names) - set(phot_all_column_names))
     if dot_phot_dot_cor_path.exists():
         dot_phot_dot_cor_data_frame = pd.read_csv(dot_phot_dot_cor_path, comment='#', names=phot_cor_column_names,
                                                   delim_whitespace=True, skipinitialspace=True)
-        columns_to_merge_in = missing_columns + [ColumnName.HJD]
+        columns_to_merge_in = missing_columns + [LightCurveColumnName.HJD]
         unordered_merged_data_frame = pd.merge(without_cor_data_frame,
-                                               dot_phot_dot_cor_data_frame[columns_to_merge_in], on=ColumnName.HJD,
+                                               dot_phot_dot_cor_data_frame[columns_to_merge_in],
+                                               on=LightCurveColumnName.HJD,
                                                how='outer')
-        if unordered_merged_data_frame[ColumnName.AIRMASS_1].isna().all():
-            unordered_merged_data_frame[ColumnName.COR_FLUX] = np.nan
+        if unordered_merged_data_frame[LightCurveColumnName.AIRMASS_1].isna().all():
+            unordered_merged_data_frame[LightCurveColumnName.COR_FLUX] = np.nan
     else:
         for missing_column in missing_columns:
             without_cor_data_frame[missing_column] = np.nan
@@ -122,7 +123,8 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
                 remote_dot_phot_path = remote_containing_directory_path.joinpath(dot_phot_name)
                 dot_phot_dot_cor_name = remote_dot_phot_dot_all_path.name.replace('.phot.all', '.phot.cor')
                 remote_dot_phot_dot_cor_path = remote_containing_directory_path.joinpath(dot_phot_dot_cor_name)
-                relative_parent_path = remote_dot_phot_dot_all_path.parent.relative_to(remote_three_version_root_directory)
+                relative_parent_path = remote_dot_phot_dot_all_path.parent.relative_to(
+                    remote_three_version_root_directory)
                 local_parent_path = local_merged_root_directory.joinpath(relative_parent_path)
                 local_parent_path.mkdir(exist_ok=True, parents=True)
                 local_dot_phot_dot_all_path = local_parent_path.joinpath(dot_phot_dot_all_name)
@@ -148,4 +150,5 @@ def copy_and_merge_from_remote(remote_hostname: str, remote_username: str, remot
 
 
 if __name__ == '__main__':
-    convert_directory_to_merged_version(Path('light_curve_sample'), Path('light_curve_sample_ipac_format'), use_multiprocessing=False)
+    convert_directory_to_merged_version(Path('light_curve_sample'), Path('light_curve_sample_ipac_format'),
+                                        use_multiprocessing=False)
