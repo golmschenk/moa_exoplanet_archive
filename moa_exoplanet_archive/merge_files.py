@@ -14,7 +14,7 @@ from astropy.table import Table
 from tabulate import tabulate
 
 from moa_exoplanet_archive.light_curve_column_name import phot_all_column_names, phot_cor_column_names, \
-    LightCurveColumnName, merged_column_names, merged_column_formats
+    LightCurveColumnName, merged_column_names, light_curve_types_dictionary
 
 
 def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, destination_merged_path: Path):
@@ -53,7 +53,7 @@ def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, dest
 
 def save_data_frame_to_traditional_format_text_file(data_frame, output_path):
     table_string = tabulate(data_frame, headers=merged_column_names, tablefmt='plain', missingval='na',
-                            floatfmt=tuple(merged_column_formats.values()), showindex=False, numalign='right')
+                            floatfmt=tuple(light_curve_types_dictionary.values()), showindex=False, numalign='right')
     table_string = table_string.replace('nan', ' na')
     with gzip.open(output_path, 'wt') as merged_file:
         merged_file.write(table_string)
