@@ -1,4 +1,7 @@
+from pathlib import Path
 from typing import Dict
+
+from astropy import units
 
 try:
     from enum import StrEnum
@@ -112,3 +115,58 @@ light_curve_description_dictionary: Dict[LightCurveColumnName, str] = {
     LightCurveColumnName.ANG_1: 'Angle relative to zenith calculated in the detrending code.',
     LightCurveColumnName.INCLUDED: 'Data included in fitting processes. Some data excluded due to bad quality flags.'
 }
+
+
+light_curve_human_readable_short_name_dictionary: Dict[LightCurveColumnName, str] = {
+    LightCurveColumnName.HJD: 'HJD',
+    LightCurveColumnName.FLUX: 'Flux',
+    LightCurveColumnName.COR_FLUX: 'Cor flux',
+    LightCurveColumnName.FLUX_ERR: 'Flux error',
+    LightCurveColumnName.OBS_ID: 'Observation ID',
+    LightCurveColumnName.JD: 'JD',
+    LightCurveColumnName.FWHM: 'FWHM',
+    LightCurveColumnName.SKY: 'Sky raw',
+    LightCurveColumnName.AIRMASS: 'Airmass',
+    LightCurveColumnName.NSTAR: 'Nstar',
+    LightCurveColumnName.SCALE: 'Image scale',
+    LightCurveColumnName.EXPTIME: 'Exposure time',
+    LightCurveColumnName.SKYDIFF: 'Sky difference',
+    LightCurveColumnName.CHISQ: 'Chi-squared',
+    LightCurveColumnName.NPIX: 'Npix',
+    LightCurveColumnName.AIRMASS_1: 'Cor airmass',
+    LightCurveColumnName.ANG_1: 'Cor angle',
+    LightCurveColumnName.INCLUDED: 'Included'
+}
+
+light_curve_units_dictionary: Dict[str, units.Unit] = {
+    LightCurveColumnName.HJD: units.day,
+    LightCurveColumnName.FLUX: units.count,
+    LightCurveColumnName.COR_FLUX: units.count,
+    LightCurveColumnName.FLUX_ERR: units.dimensionless_unscaled,
+    LightCurveColumnName.OBS_ID: units.dimensionless_unscaled,
+    LightCurveColumnName.JD: units.day,
+    LightCurveColumnName.FWHM: units.dimensionless_unscaled,
+    LightCurveColumnName.SKY: units.count,
+    LightCurveColumnName.AIRMASS: units.dimensionless_unscaled,
+    LightCurveColumnName.NSTAR: units.dimensionless_unscaled,
+    LightCurveColumnName.SCALE: units.dimensionless_unscaled,
+    LightCurveColumnName.EXPTIME: units.second,
+    LightCurveColumnName.SKYDIFF: units.count,
+    LightCurveColumnName.CHISQ: units.dimensionless_unscaled,
+    LightCurveColumnName.NPIX: units.dimensionless_unscaled,
+    LightCurveColumnName.AIRMASS_1: units.dimensionless_unscaled,
+    LightCurveColumnName.ANG_1: units.rad,
+    LightCurveColumnName.INCLUDED: units.dimensionless_unscaled
+}
+
+
+if __name__ == '__main__':
+    with Path('light_curve_columns.csv').open('w') as column_descriptions_file:
+        column_descriptions_file.write('"name","human_readable_short_name","units","description"\n')
+        for column_name in LightCurveColumnName:
+            column_descriptions_file.write(rf'"{column_name}",'
+                                           rf'"{light_curve_human_readable_short_name_dictionary[column_name]}",'
+                                           rf'"{light_curve_units_dictionary[column_name]}",'
+                                           rf'"{light_curve_description_dictionary[column_name]}"'
+                                           f'\n'
+                                           )

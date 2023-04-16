@@ -265,20 +265,20 @@ class MetadataProcessor:
         if alert_metadata_list is not None:
             alert_metadata0 = alert_metadata_list[0]
             exoplanet_archive_dictionary.update({
-                MetadataColumnName.SEPARATION_TO_ALERT_POSITION0:
+                MetadataColumnName.SEPARATION_TO_ALERT_POSITION1:
                     alert_metadata0.separation_to_alert_position__pixels,
-                MetadataColumnName.ALERT_ID0: alert_metadata0.alert_id,
-                MetadataColumnName.ALERT_X0: alert_metadata0.alert_x__pixels,
-                MetadataColumnName.ALERT_Y0: alert_metadata0.alert_y__pixels,
+                MetadataColumnName.ALERT_ID1: alert_metadata0.alert_id,
+                MetadataColumnName.ALERT_X1: alert_metadata0.alert_x__pixels,
+                MetadataColumnName.ALERT_Y1: alert_metadata0.alert_y__pixels,
             })
             if len(alert_metadata_list) > 1:
                 alert_metadata1 = alert_metadata_list[1]
                 exoplanet_archive_dictionary.update({
-                    MetadataColumnName.SEPARATION_TO_ALERT_POSITION1:
+                    MetadataColumnName.SEPARATION_TO_ALERT_POSITION2:
                         alert_metadata1.separation_to_alert_position__pixels,
-                    MetadataColumnName.ALERT_ID1: alert_metadata1.alert_id,
-                    MetadataColumnName.ALERT_X1: alert_metadata1.alert_x__pixels,
-                    MetadataColumnName.ALERT_Y1: alert_metadata1.alert_y__pixels,
+                    MetadataColumnName.ALERT_ID2: alert_metadata1.alert_id,
+                    MetadataColumnName.ALERT_X2: alert_metadata1.alert_x__pixels,
+                    MetadataColumnName.ALERT_Y2: alert_metadata1.alert_y__pixels,
                 })
         return exoplanet_archive_dictionary
 

@@ -66,14 +66,14 @@ class MetadataColumnName(StrEnum):
     FSPL_SOURCE_FLUX_ERROR = 'fspl_source_flux_error'
     FSPL_BLENDING_FLUX_ERROR = 'fspl_blending_flux_error'
     FSPL_CHI_SQUARED = 'fspl_chi_squared'
-    SEPARATION_TO_ALERT_POSITION0 = 'separation_to_alert_position0'
-    ALERT_ID0 = 'alert_id0'
-    ALERT_X0 = 'alert_x0'
-    ALERT_Y0 = 'alert_y0'
     SEPARATION_TO_ALERT_POSITION1 = 'separation_to_alert_position1'
     ALERT_ID1 = 'alert_id1'
     ALERT_X1 = 'alert_x1'
     ALERT_Y1 = 'alert_y1'
+    SEPARATION_TO_ALERT_POSITION2 = 'separation_to_alert_position2'
+    ALERT_ID2 = 'alert_id2'
+    ALERT_X2 = 'alert_x2'
+    ALERT_Y2 = 'alert_y2'
 
 
 metadata_column_description_dictionary = {
@@ -130,14 +130,14 @@ metadata_column_description_dictionary = {
     MetadataColumnName.FSPL_SOURCE_FLUX_ERROR: f'Error in `{MetadataColumnName.FSPL_SOURCE_FLUX}`.',
     MetadataColumnName.FSPL_BLENDING_FLUX_ERROR: f'Error in `{MetadataColumnName.FSPL_BLENDING_FLUX}`.',
     MetadataColumnName.FSPL_CHI_SQUARED: 'The chi squared statistic of the fitted FSPL model.',
-    MetadataColumnName.SEPARATION_TO_ALERT_POSITION0: 'Separation to alert 1 position.',
-    MetadataColumnName.ALERT_ID0: 'Alert 1 identifier.',
-    MetadataColumnName.ALERT_X0: 'Alert 1 x pixel position.',
-    MetadataColumnName.ALERT_Y0: 'Alert 1 y pixel position.',
-    MetadataColumnName.SEPARATION_TO_ALERT_POSITION1: 'Separation to alert 2 position.',
-    MetadataColumnName.ALERT_ID1: 'Alert 2 identifier.',
-    MetadataColumnName.ALERT_X1: 'Alert 2 x pixel position.',
-    MetadataColumnName.ALERT_Y1: 'Alert 2 y pixel position.',
+    MetadataColumnName.SEPARATION_TO_ALERT_POSITION1: 'Separation to alert 1 position.',
+    MetadataColumnName.ALERT_ID1: 'Alert 1 identifier.',
+    MetadataColumnName.ALERT_X1: 'Alert 1 x pixel position.',
+    MetadataColumnName.ALERT_Y1: 'Alert 1 y pixel position.',
+    MetadataColumnName.SEPARATION_TO_ALERT_POSITION2: 'Separation to alert 2 position.',
+    MetadataColumnName.ALERT_ID2: 'Alert 2 identifier.',
+    MetadataColumnName.ALERT_X2: 'Alert 2 x pixel position.',
+    MetadataColumnName.ALERT_Y2: 'Alert 2 y pixel position.',
 }
 
 for metadata_column_name in MetadataColumnName:
@@ -197,14 +197,14 @@ metadata_human_readable_short_name_dictionary = {
     MetadataColumnName.FSPL_SOURCE_FLUX_ERROR: f'Source flux error (FSPL)',
     MetadataColumnName.FSPL_BLENDING_FLUX_ERROR: f'Blending flux error (FSPL)',
     MetadataColumnName.FSPL_CHI_SQUARED: 'Chi squared (FSPL)',
-    MetadataColumnName.SEPARATION_TO_ALERT_POSITION0: 'Alert 1 separation',
-    MetadataColumnName.ALERT_ID0: 'Alert 1 ID',
-    MetadataColumnName.ALERT_X0: 'Alert 1 x',
-    MetadataColumnName.ALERT_Y0: 'Alert 1 y',
-    MetadataColumnName.SEPARATION_TO_ALERT_POSITION1: 'Alert 2 separation',
-    MetadataColumnName.ALERT_ID1: 'Alert 2 ID',
-    MetadataColumnName.ALERT_X1: 'Alert 2 x',
-    MetadataColumnName.ALERT_Y1: 'Alert 2 y',
+    MetadataColumnName.SEPARATION_TO_ALERT_POSITION1: 'Alert 1 separation',
+    MetadataColumnName.ALERT_ID1: 'Alert 1 ID',
+    MetadataColumnName.ALERT_X1: 'Alert 1 x',
+    MetadataColumnName.ALERT_Y1: 'Alert 1 y',
+    MetadataColumnName.SEPARATION_TO_ALERT_POSITION2: 'Alert 2 separation',
+    MetadataColumnName.ALERT_ID2: 'Alert 2 ID',
+    MetadataColumnName.ALERT_X2: 'Alert 2 x',
+    MetadataColumnName.ALERT_Y2: 'Alert 2 y',
 }
 
 for metadata_column_name in MetadataColumnName:
@@ -420,14 +420,14 @@ metadata_units_dictionary: Dict[str, units.Unit] = {
     MetadataColumnName.FSPL_SOURCE_FLUX_ERROR: units.dimensionless_unscaled,
     MetadataColumnName.FSPL_BLENDING_FLUX_ERROR: units.dimensionless_unscaled,
     MetadataColumnName.FSPL_CHI_SQUARED: units.dimensionless_unscaled,
-    MetadataColumnName.SEPARATION_TO_ALERT_POSITION0: units.pixel,
-    MetadataColumnName.ALERT_ID0: units.dimensionless_unscaled,
-    MetadataColumnName.ALERT_X0: units.pixel,
-    MetadataColumnName.ALERT_Y0: units.pixel,
     MetadataColumnName.SEPARATION_TO_ALERT_POSITION1: units.pixel,
     MetadataColumnName.ALERT_ID1: units.dimensionless_unscaled,
     MetadataColumnName.ALERT_X1: units.pixel,
     MetadataColumnName.ALERT_Y1: units.pixel,
+    MetadataColumnName.SEPARATION_TO_ALERT_POSITION2: units.pixel,
+    MetadataColumnName.ALERT_ID2: units.dimensionless_unscaled,
+    MetadataColumnName.ALERT_X2: units.pixel,
+    MetadataColumnName.ALERT_Y2: units.pixel,
 }
 
 metadata_types_dictionary: Dict[str, np.dtype] = {
@@ -484,21 +484,23 @@ metadata_types_dictionary: Dict[str, np.dtype] = {
     MetadataColumnName.FSPL_SOURCE_FLUX_ERROR: np.float64,
     MetadataColumnName.FSPL_BLENDING_FLUX_ERROR: np.float64,
     MetadataColumnName.FSPL_CHI_SQUARED: np.float64,
-    MetadataColumnName.SEPARATION_TO_ALERT_POSITION0: np.float64,
-    MetadataColumnName.ALERT_ID0: str,
-    MetadataColumnName.ALERT_X0: np.float64,
-    MetadataColumnName.ALERT_Y0: np.float64,
     MetadataColumnName.SEPARATION_TO_ALERT_POSITION1: np.float64,
     MetadataColumnName.ALERT_ID1: str,
     MetadataColumnName.ALERT_X1: np.float64,
     MetadataColumnName.ALERT_Y1: np.float64,
+    MetadataColumnName.SEPARATION_TO_ALERT_POSITION2: np.float64,
+    MetadataColumnName.ALERT_ID2: str,
+    MetadataColumnName.ALERT_X2: np.float64,
+    MetadataColumnName.ALERT_Y2: np.float64,
 }
 
 
 if __name__ == '__main__':
-    with Path('column_descriptions.csv').open('w') as column_descriptions_file:
-        column_descriptions_file.write('column_name,column_description\n')
-        print()
-        for column_name, column_description in metadata_column_description_dictionary.items():
-            column_descriptions_file.write(f'{column_name},"{column_description}"\n')
-            print(f'{column_name}: {column_description}')
+    with Path('metadata_columns.csv').open('w') as column_descriptions_file:
+        column_descriptions_file.write('"name","human_readable_short_name","units","description"\n')
+        for column_name in MetadataColumnName:
+            column_descriptions_file.write(rf'"{column_name}",'
+                                           rf'"{metadata_human_readable_short_name_dictionary[column_name]}",'
+                                           rf'"{metadata_units_dictionary[column_name]}",'
+                                           rf'"{metadata_column_description_dictionary[column_name]}"'
+                                           f'\n')
