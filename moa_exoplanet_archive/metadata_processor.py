@@ -81,11 +81,6 @@ class MetadataProcessor:
                                              alert_metadata_list=alert_metadata_list)
             target_exoplanet_archive_dictionary = self.target_metadata_to_exoplanet_archive_dictionary(target_metadata)
             target_exoplanet_archive_dictionary_list.append(target_exoplanet_archive_dictionary)
-        # TODO: Remove this artificial removal of first junk tag.
-        for target_exoplanet_archive_dictionary in target_exoplanet_archive_dictionary_list:
-            if target_exoplanet_archive_dictionary[MetadataColumnName.TAG] == 'j':
-                del target_exoplanet_archive_dictionary[MetadataColumnName.TAG]
-                break
         exoplanet_archive_table = Table(data=target_exoplanet_archive_dictionary_list,
                                         names=[name for name in MetadataColumnName],
                                         dtype=metadata_types_dictionary.values(),
