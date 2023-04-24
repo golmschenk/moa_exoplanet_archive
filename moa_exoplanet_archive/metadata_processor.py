@@ -63,16 +63,7 @@ class MetadataProcessor:
         target_exoplanet_archive_dictionary_list: List[Dict[str, Any]] = []
         for light_curve_path in light_curve_glob:
             field, chip, subframe, id_ = self.extract_field_chip_subframe_and_id_from_light_curve_path(light_curve_path)
-            light_curve_row = self.candlist_data_frame[
-                (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.FIELD] == f'gb{field}') &
-                (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.CHIP] == chip) &
-                (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.NSUB] == subframe) &
-                (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.ID] == id_)].iloc[0]
-            x__pixels = light_curve_row[TakahiroSumiCandlistFileColumnName.X]
-            y__pixels = light_curve_row[TakahiroSumiCandlistFileColumnName.Y]
-            ra, dec = self.get_ra_and_dec_for_ccd_position(field=field, chip=chip, x__pixels=x__pixels,
-                                                           y__pixels=y__pixels)
-            tag = light_curve_row[TakahiroSumiCandlistFileColumnName.TAG]
+            x__pixels, y__pixels, ra, dec, tag = self.get_basic_target_data_from_candlist(field, chip, subframe, id_)
             candidate_metadata = self.get_candidate_metadata_for_light_curve_from_candlist(light_curve_path)
             alert_metadata_list = self.get_alert_metadata_list_for_light_curve(light_curve_path)
             target_metadata = TargetMetadata(field=field, chip=chip, subframe=subframe, id=id_, tag=tag,
@@ -88,6 +79,19 @@ class MetadataProcessor:
                                         )
         output_metadata_path = Path('metadata.ipac')
         astropy.io.ascii.write(exoplanet_archive_table, output=output_metadata_path, format='ipac', overwrite=True)
+
+    def get_basic_target_data_from_candlist(self, field, chip, subframe, id_):
+        light_curve_row = self.candlist_data_frame[
+            (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.FIELD] == f'gb{field}') &
+            (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.CHIP] == chip) &
+            (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.NSUB] == subframe) &
+            (self.candlist_data_frame[TakahiroSumiCandlistFileColumnName.ID] == id_)].iloc[0]
+        x__pixels = light_curve_row[TakahiroSumiCandlistFileColumnName.X]
+        y__pixels = light_curve_row[TakahiroSumiCandlistFileColumnName.Y]
+        ra, dec = self.get_ra_and_dec_for_ccd_position(field=field, chip=chip, x__pixels=x__pixels,
+                                                       y__pixels=y__pixels)
+        tag = light_curve_row[TakahiroSumiCandlistFileColumnName.TAG]
+        return x__pixels, y__pixels, ra, dec, tag
 
     def extract_field_chip_subframe_and_id_from_light_curve_path(self, light_curve_path) -> (int, int, int, int):
         match = re.match(r'gb(\d+)-R-(\d+)-(\d+)-(\d+).ipac.gz', light_curve_path.name)
