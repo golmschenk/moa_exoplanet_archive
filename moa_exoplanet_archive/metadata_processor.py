@@ -73,7 +73,7 @@ class MetadataProcessor:
             ra, dec = self.get_ra_and_dec_for_ccd_position(field=field, chip=chip, x__pixels=x__pixels,
                                                            y__pixels=y__pixels)
             tag = light_curve_row[TakahiroSumiCandlistFileColumnName.TAG]
-            candidate_metadata = self.get_candidate_metadata_for_light_curve(light_curve_path)
+            candidate_metadata = self.get_candidate_metadata_for_light_curve_from_candlist(light_curve_path)
             alert_metadata_list = self.get_alert_metadata_list_for_light_curve(light_curve_path)
             target_metadata = TargetMetadata(field=field, chip=chip, subframe=subframe, id=id_, tag=tag,
                                              x__pixels=x__pixels, y__pixels=y__pixels, ra_j2000=ra, dec_j2000=dec,
@@ -99,7 +99,8 @@ class MetadataProcessor:
         id_ = int(match.group(4))
         return field, chip, subframe, id_
 
-    def get_candidate_metadata_for_light_curve(self, light_curve_path: Path) -> Optional[CandidateMetadata]:
+    def get_candidate_metadata_for_light_curve_from_candlist(self, light_curve_path: Path
+                                                             ) -> Optional[CandidateMetadata]:
         field, chip, subframe, id_ = self.extract_field_chip_subframe_and_id_from_light_curve_path(light_curve_path)
         try:
             light_curve_row = self.candlist_ra_dec_data_frame[
