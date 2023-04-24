@@ -13,6 +13,7 @@ from moa_exoplanet_archive.metadata_column_name import AlertMetadata, CandidateM
     MetadataColumnName, TakahiroSumiCandlistRaDecFileColumnName, TakahiroSumiCandlistFileColumnName, \
     TakahiroSumiCandlistAlertIdFileColumnName, metadata_units_dictionary, \
     metadata_types_dictionary
+from moa_exoplanet_archive.paths_and_names import local_cut0_object_directory
 
 candlist_ra_dec_path = Path('metadata/candlist_RADec.dat.20230202.txt')
 candlist_path = Path('metadata/candlist.txt')
@@ -63,7 +64,7 @@ class MetadataProcessor:
         target_exoplanet_archive_dictionary_list: List[Dict[str, Any]] = []
         for light_curve_path in light_curve_glob:
             field, chip, subframe, id_ = self.extract_field_chip_subframe_and_id_from_light_curve_path(light_curve_path)
-            x__pixels, y__pixels, ra, dec, tag = self.get_basic_target_data_from_candlist(field, chip, subframe, id_)
+            x__pixels, y__pixels, ra, dec, tag = self.get_basic_target_data(field, chip, subframe, id_)
             candidate_metadata = self.get_candidate_metadata_for_light_curve_from_candlist(light_curve_path)
             alert_metadata_list = self.get_alert_metadata_list_for_light_curve(light_curve_path)
             target_metadata = TargetMetadata(field=field, chip=chip, subframe=subframe, id=id_, tag=tag,
@@ -79,6 +80,31 @@ class MetadataProcessor:
                                         )
         output_metadata_path = Path('metadata.ipac')
         astropy.io.ascii.write(exoplanet_archive_table, output=output_metadata_path, format='ipac', overwrite=True)
+
+    def get_basic_target_data(self, field: int, chip: int, subframe: int, id_: int
+                              ) -> (float, float, float, float, Optional[str]):
+        x__pixels, y__pixels, ra, dec, tag = self.get_basic_target_data_from_object_file(
+            field, chip, subframe, id_)
+        result = self.get_basic_target_data_from_candlist(field, chip, subframe, id_)
+        if result is not None:
+            cl_x__pixels, cl_y__pixels, cl_ra, cl_dec, cl_tag = result
+            assert cl_x__pixels == x__pixels
+            assert cl_y__pixels == y__pixels
+            assert cl_ra == ra
+            assert cl_dec == dec
+            tag = cl_tag
+        return x__pixels, y__pixels, ra, dec, tag
+
+    def get_basic_target_data_from_object_file(self, field, chip, subframe, id_):
+        object_path = Path(local_cut0_object_directory).joinpath(f'cut0-gb{field}-{chip}-{subframe}.obj')
+        object_data_frame = pd.read_csv(object_path, delim_whitespace=True, skipinitialspace=True, comment='#',
+                                        names=['id', 'x', 'y'], usecols=[0, 1, 2])
+        light_curve_row = object_data_frame[(self.candlist_data_frame['id'] == id_)].iloc[0]
+        x__pixels = light_curve_row['x']
+        y__pixels = light_curve_row['y']
+        ra, dec = self.get_ra_and_dec_for_ccd_position(field=field, chip=chip, x__pixels=x__pixels, y__pixels=y__pixels)
+        tag = None
+        return x__pixels, y__pixels, ra, dec, tag
 
     def get_basic_target_data_from_candlist(self, field, chip, subframe, id_):
         light_curve_row = self.candlist_data_frame[

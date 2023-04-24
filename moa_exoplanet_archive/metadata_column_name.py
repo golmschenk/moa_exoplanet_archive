@@ -273,7 +273,7 @@ class TargetMetadata:
     chip: int
     subframe: int
     id: int
-    tag: str
+    tag: Optional[str]
     x__pixels: float
     y__pixels: float
     ra_j2000: Angle
