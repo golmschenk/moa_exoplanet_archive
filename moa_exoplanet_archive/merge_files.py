@@ -53,7 +53,8 @@ def merge_split_version_files_into_single_file(dot_phot_dot_all_path: Path, dest
 
 def save_data_frame_to_traditional_format_text_file(data_frame, output_path):
     table_string = tabulate(data_frame, headers=merged_column_names, tablefmt='plain', missingval='na',
-                            floatfmt=tuple(light_curve_text_format_dictionary.values()), showindex=False, numalign='right')
+                            floatfmt=tuple(light_curve_text_format_dictionary.values()), showindex=False,
+                            numalign='right')
     table_string = table_string.replace('nan', ' na')
     with gzip.open(output_path, 'wt') as merged_file:
         merged_file.write(table_string)

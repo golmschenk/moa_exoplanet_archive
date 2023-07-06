@@ -13,6 +13,6 @@ osaka_data_directories = [
     Path("/moao11_3/sumi/MOA2dia"), Path("/moao2_3/sumi/MOA2dia"), Path("/moao4_3/sumi/MOA2dia"),
     Path("/moao6_3/sumi/MOA2dia")
 ]
-local_directory = 'moa_exoplanet_archive_data'
-osaka_cut0_object_subdirectory = 'cut0.chi2NoCJD8dupSR14CSm2p8PSsdf21'
-local_cut0_object_directory = 'cut0_object_files'
+local_directory = Path('moa_exoplanet_archive_data')
+osaka_cut0_object_subdirectory = Path('cut0.chi2NoCJD8dupSR14CSm2p8PSsdf21')
+local_cut0_object_directory = Path('/local/data/emu/share/exoplanet_archive_moa_dataset/exoplanet_archive_moa_dataset/cut0.chi2NoCJD8dupSR14CSm2p8PSsdf21')
