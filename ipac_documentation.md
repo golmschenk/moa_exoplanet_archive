@@ -1,1 +1,7 @@
-DoPHOT is a point spread function fitting (PSF) photometry program. Some relevant details of the PSF fitting are discussed. The quality of the photometry returned by DoPHOT is assessed via reductions of an 'artificial' globular cluster generated from a list with well known magnitudes and colors. Results from comparative tests between DoPHOT and DAOPHOT using this synthetic cluster and real data are also described. (SECTION: Instrumentation and Data Analysis)
+Software Used to Create the Dataset
+
+DoPHOT
+
+DoPHOT is a common point spread function fitting (PSF) photometry program. DoPHOT uses a analytical function (a polynomial approximation to a 2-D Gaussian) to represent stellar profiles.
+
+The MOA dataset consists of two components. A collection of light curves, each of a which is a table of data, and the table of the metadata for all the light curves. Each row in each light curve table corresponds to a moment in time, and the related measurements and derived values for that moment in time. Each row in the metadata table corresponds to a light curve. There is one row in the metadata table for each light curve in the dataset.
