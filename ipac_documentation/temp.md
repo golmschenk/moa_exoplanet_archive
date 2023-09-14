@@ -1,3 +1,5 @@
+![moa_logo](images/moa_logo.jpg "moa_logo")
+
 ## Observational Coverage Map
 
 This figure identifies the 22 target fields observed by the MOA survey, from which the approximately 2.4 million light curves were produced. Approximately 6,000 candidate events were identified.
