@@ -101,7 +101,8 @@ The MOA dataset consists of two components. A collection of light curves, each o
 # Observational Coverage Map
 
 This figure identifies the 22 target fields observed by the MOA survey, from which the approximately 2.4 million light curves were produced. Approximately 6,000 candidate events were identified.
-![moa_fields](images/moa_fields.jpg "moa_fields")
+
+![moa_fields](images/moa_fields.png "moa_fields")
 
 # Data Selection Criteria
 Here we describe the criteria used by the MOA collaboration to produce the full light curve dataset, and identify microlensing candidate events. This methodology is a slight variation of what is described in the Supplementary Information section of [Sumi, T., et al. (2011) Nature, 473, 349](https://ui.adsabs.harvard.edu/#abs/2011Natur.473..349S/abstract). Please refer to that manuscript for additional details.
