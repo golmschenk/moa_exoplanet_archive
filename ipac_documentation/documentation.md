@@ -98,6 +98,8 @@ The MOA dataset consists of two components. A collection of light curves, each o
 
 # Using the Interactive Interface to Browse the Dataset
 
+**To be filled by IPAC**
+
 # Observational Coverage Map
 
 This figure identifies the 22 target fields observed by the MOA survey, from which the approximately 2.4 million light curves were produced. Approximately 6,000 candidate events were identified.
