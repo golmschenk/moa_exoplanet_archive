@@ -6,7 +6,7 @@ Here we present the survey data from the Microlensing Observations in Astrophysi
 
 # Data Products Description
 
-The MOA dataset consists of two components. A collection of light curves, each of a which is a table of data, and the table of the metadata for all the light curves. Each row in each light curve table corresponds to a moment in time, and the related measurements and derived values for that moment in time. Each row in the metadata table corresponds to a light curve. There is one row in the metadata table for each light curve in the dataset.
+The MOA dataset consists of two components. A collection of approximately 2.4M light curves and the table of containing the metadata for all the light curves. Each light curve is presented as a table in this dataset. Each row in each light curve table corresponds to a moment in time when an observation was made, and the related measurements and derived values for that observation. Each row in the metadata table corresponds to a light curve. There is one row in the metadata table for each light curve in the dataset. The metadata row contains both observational information about the light curve (e.g., location on the sky) and relevant microlensing candidate selection information (e.g., the initial point-source-point-lens parameters found to fit the event). The complete list data columns is given below.
 
 ## Metadata columns
 | name                                     | human_readable_short_name   | units   | description                                                                                                                |
