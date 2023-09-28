@@ -2,7 +2,7 @@
 
 # Overview
 
-Here we present the survey data from the Microlensing Observations in Astrophysics (MOA) collaboration, which operates a joint Japanese/New Zealand ground-based microlensing survey. In total, this data release includes approximately 2,400,000 photometric light curves, acquired from 2006 - 2014, using the 1.8m MOA telescope located at Mount John Observatory in New Zealand. These data span 22 target fields, the locations of which are shown in the observational coverage map below, were selected using the methodology described below, and have been made available to the public via the NASA Exoplanet Archive with help from the MOA collaboration.
+Here we present the survey data from the Microlensing Observations in Astrophysics (MOA) collaboration, which operates a joint Japanese/New Zealand ground-based microlensing survey. In total, this data release includes approximately 2,400,000 photometric light curves, acquired from 2006 to 2014, using the 1.8m MOA telescope located at Mount John Observatory in New Zealand. These data span 22 target fields, the locations of which are shown in the observational coverage map below, were produced and had candidates microlensing events selected using the methodology described below, and have been made available to the public via the NASA Exoplanet Archive with help from the MOA collaboration.
 
 # Data Products Description
 
